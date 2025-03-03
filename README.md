@@ -24,8 +24,16 @@ I was working on a [translator](https://play.google.com/store/apps/details?id=da
 
 A positive side effect is that this reduces binary side, as you need to subclass QObject less often, for example if you need to use [movetothread()](https://doc.qt.io/qt-6/qobject.html#moveToThread), only the moved object has to subclass QObject, the object(s) connected to its signal do not.
 
-Just add #include "signal.h"and start connecting.
+Just add #include "signal.h"and start connecting. This works with any c++ and Qt types:
 
+```
+melo::signal<>
+melo::signal<bool>
+melo::signal<QByteArray>
+melo::signal<const QString&>
+melo::signal<const QStringList&>
+```
+ 
 ## Examples
 
 ### 1️⃣ Creating a Signal
