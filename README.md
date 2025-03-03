@@ -155,6 +155,8 @@ int main() {
 -   `disconnect();` → Removes all connected slots.
 -   `emit(42);` again → Nothing happens because all connections are removed.
 
+You are still free to add new connections on the signal after calling disconnect().
+
 ## Limitations
 
 #### c++20 minimum required
