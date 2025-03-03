@@ -170,6 +170,7 @@ The way this library uses parameter pack expansion is s only valid starting **C+
 ### How does autoconnect work
 
 When creating a connection, a pointer to the calling/receiver object's thread is saved using QThread::currentThread(), then signal is emited, this pointer is compared to the emiter's thread using QThread:: isCurrentThread().
+The pointer is saved in a QPointer, this has the advantage of voiding the connection if the receiver's thread is destroyed, as the QPointer will be automatically [cleared](https://doc.qt.io/qt-6/qpointer.html#details).
 
 The code decides whether to use direct or queued execution:
 ```
