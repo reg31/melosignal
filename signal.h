@@ -46,7 +46,7 @@ public:
         QMutexLocker locker(&mutex);
 
         slots.emplace_back (
-            [instance, member_func](Args... value) {
+            [instance, member_func](Args... args) {
                 (instance->*member_func)(std::forward<decltype(args)>(args)...);
             },
             QThread::currentThread()
