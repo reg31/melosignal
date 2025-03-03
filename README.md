@@ -156,7 +156,7 @@ int main() {
     Received: 42
     After disconnect:
 
-(After disconnecting, no function is called.)
+(After disconnecting, no function is called)
 
 -   `connect(callbackFunction);` → Connects a function to the signal.
 -   `emit(42);` → Calls the function.
