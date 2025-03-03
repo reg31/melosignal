@@ -47,7 +47,7 @@ public:
 
         slots.emplace_back (
             [instance, member_func](Args... value) {
-                (instance->*member_func)(static_cast<SlotArgs&&>(value)...);
+                (instance->*member_func)(std::forward<decltype(args)>(args)...);
             },
             QThread::currentThread()
         );
