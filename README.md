@@ -157,7 +157,7 @@ int main() {
 
 You are still free to add new connections on the signal after calling disconnect().
 
-## Limitations
+## Limitations and thread affinity
 
 #### c++20 minimum required
 
@@ -167,7 +167,7 @@ You are still free to add new connections on the signal after calling disconnect
 
 The way this library uses parameter pack expansion is s only valid starting **C++20**.
 
-### How does autoconnect work
+#### How does autoconnect work?
 
 When creating a connection, a pointer to the calling/receiver object's thread is saved using QThread::currentThread(), then signal is emited, this pointer is compared to the emiter's thread using QThread:: isCurrentThread().
 The pointer is saved in a QPointer, this has the advantage of voiding the connection if the receiver's thread is destroyed, as the QPointer will be automatically [cleared](https://doc.qt.io/qt-6/qpointer.html#details).
@@ -192,7 +192,7 @@ The function is queued and executed in the target thread’s event loop.
 This approach ensures thread safety, preventing function calls from executing in the wrong thread.
 
 
-### Thread safety
+#### Thread safety
 
 The library is thread safe, connect and emit functions are protected by a QMutex and a QMutexLocker. The mutex is unlikely to be triggered unless you use the library in high performance application.
 
