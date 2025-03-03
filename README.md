@@ -1,6 +1,6 @@
 # melosignal
 
-This is a c++20 alternative to Qt signal and slots.
+This is a c++20 alternative to Qt signals and slots.
 
 There are already many similar libraries on Github, and I used some of them, however they did not completely fit my use case:
 
