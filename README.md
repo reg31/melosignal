@@ -4,7 +4,7 @@ This is a c++20 replacement for Qt signal and slots.
 
 There are already many similar libraries on Github, and I used some of them, however they did not completely fit my use case:
 
- - A minimalist code
+ - A lightweight library
  - Handle direct and queued connections automatically
  - Easy to modify to suit your own requirement
  - Use seamlessly the Qt way (make it easy and not boilerplate to implement)
