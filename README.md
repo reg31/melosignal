@@ -2,7 +2,7 @@
 
 This is a c++20 replacement for Qt signal and slots.
 
-There already many similar libraries on Github, and I used some of them, however they did not completely fit my use case:
+There are already many similar libraries on Github, and I used some of them, however they did not completely fit my use case:
 
  - A minimalist code
  - Handle direct and queued connections automatically
@@ -15,7 +15,7 @@ I was working on a [translator](https://play.google.com/store/apps/details?id=da
 
 ## Features
 
- - Support function pointers and lamdas
+ - Support function pointers and lambdas
  - Support member functions with different reference types
  - Support connecting one signal to another
  - Automatic direct or queued connection based on thread affinity
