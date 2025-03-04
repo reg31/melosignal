@@ -9,7 +9,6 @@
 #include <QMetaObject>
 #include <QMutexLocker>
 
-
 namespace melo {
 
 // Templated Signal class
@@ -47,7 +46,7 @@ public:
 
         slots.emplace_back (
             [instance, member_func](Args... args) {
-                (instance->*member_func)(std::forward<decltype(args)>(args)...);
+                (instance->*member_func)(std::forward<SlotArgs&&>(args)...);
             },
             QThread::currentThread()
         );
