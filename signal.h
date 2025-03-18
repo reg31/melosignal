@@ -11,7 +11,6 @@
 
 namespace melo {
 
-// Templated Signal class
 template <typename... Args>
 class signal
 {
@@ -20,11 +19,17 @@ private:
 
     struct Slot {
        function_ptr function = nullptr;
-        QPointer<QThread> thread = nullptr;
+       QPointer<QThread> thread = QThread::currentThread();
     };
 
     std::vector<Slot> slots{};
     QMutex mutex;
+	
+	inline void insert(const function_ptr &func)
+	{
+		QMutexLocker locker(&mutex);
+		slots.emplace_back(func);
+	}
 
 public:
 
@@ -32,35 +37,28 @@ public:
     signal() { slots.reserve(3); };
 
     // ✅ Support function pointers and lamdas
-    void connect(function_ptr slot)
-    {
-        QMutexLocker locker(&mutex);
-        slots.emplace_back(std::move(slot), QThread::currentThread());
-    }
+	template <typename Func>
+	void connect(Func&& func)
+	{	
+		insert(func);
+	}
 
     // ✅ Support member functions with different reference types
-    template <typename ClassType, typename... SlotArgs>
-    void connect(ClassType* instance, void (ClassType::*member_func)(SlotArgs...))
-    {
-        QMutexLocker locker(&mutex);
-
-        slots.emplace_back (
-            [instance, member_func](Args... args) {
-                (instance->*member_func)(std::forward<SlotArgs&&>(args)...);
-            },
-            QThread::currentThread()
+    template <typename ClassType, typename Func>
+    void connect(ClassType* instance, Func&& func)
+	{		
+        insert (
+            [instance, func](Args&&... args) {
+				std::invoke(func, instance, std::forward<Args>(args)...);
+            }
         );
-    }
+	}
 
     // ✅ Support connecting one signal to another
-    void connect(signal<Args...>& other)
+	template <typename OtherSignal>
+    void connect(OtherSignal &other)
     {
-        QMutexLocker locker(&mutex);
-
-        slots.emplace_back (
-            [&other](Args... args) { other.emit(args...); },
-            QThread::currentThread()
-        );
+        insert ([&other](Args&&... args) { other.emit(std::forward<Args>(args)...); });
     }
 
     void disconnect()
@@ -78,10 +76,10 @@ public:
             if(slot.function != nullptr && slot.thread)
             {
                 if (slot.thread->isCurrentThread()) {
-                    slot.function(std::forward<Args>(args)...);
+                    slot.function(args...);
                 } else {
-                    QMetaObject::invokeMethod(slot.thread, [slot, args...]() mutable {
-                        slot.function(std::forward<Args>(args)...);
+                    QMetaObject::invokeMethod(slot.thread, [slot, args...] {
+                        slot.function(args...);
                     }, Qt::QueuedConnection);
                 }
             }
