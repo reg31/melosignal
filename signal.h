@@ -15,17 +15,17 @@ template <typename... Args>
 class signal
 {
 private:
-    using function_ptr = std::function<void(Args...)>;
+    using Callback = std::function<void(Args...)>;
 
     struct Slot {
-       function_ptr function = nullptr;
+       Callback callback = nullptr;
        QPointer<QThread> thread = QThread::currentThread();
     };
 
     std::vector<Slot> slots{};
     QMutex mutex;
 	
-	inline void insert(const function_ptr &func)
+	inline void insert(const Callback &func)
 	{
 		QMutexLocker locker(&mutex);
 		slots.emplace_back(func);
@@ -49,7 +49,7 @@ public:
 	{		
         insert (
             [instance, func](Args&&... args) {
-		std::invoke(func, instance, std::forward<Args>(args)...);
+				std::invoke(func, instance, std::forward<Args>(args)...);
             }
         );
 	}
@@ -73,13 +73,13 @@ public:
 
         for (const Slot &slot : slots)
         {
-            if(slot.function != nullptr && slot.thread)
+            if(slot.callback != nullptr)
             {
                 if (slot.thread->isCurrentThread()) {
-                    slot.function(args...);
+                    slot.callback(args...);
                 } else {
                     QMetaObject::invokeMethod(slot.thread, [slot, args...] {
-                        slot.function(args...);
+                        slot.callback(args...);
                     }, Qt::QueuedConnection);
                 }
             }
