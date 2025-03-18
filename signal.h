@@ -18,17 +18,17 @@ private:
     using Callback = std::function<void(Args...)>;
 
     struct Slot {
-	  Callback callback = nullptr;
-         QPointer<QThread> thread = QThread::currentThread();
+		Callback callback = nullptr;
+		QPointer<QThread> thread = QThread::currentThread();
     };
 
     std::vector<Slot> slots{};
     QMutex mutex;
 	
-	inline void insert(const Callback &func)
+	inline void insert(const Callback &callee)
 	{
-	    QMutexLocker locker(&mutex);
-	    slots.emplace_back(func);
+		QMutexLocker locker(&mutex);
+		slots.emplace_back(callee);
 	}
 
 public:
@@ -37,21 +37,21 @@ public:
     signal() { slots.reserve(3); };
 
     // ✅ Support function pointers and lamdas
-	template <typename Func>
-	void connect(Func&& func)
+	template <typename Function>
+	void connect(Function&& callee)
 	{	
-	    insert(func);
+		insert(callee);
 	}
 
     // ✅ Support member functions with different reference types
-    template <typename ClassType, typename Func>
-    void connect(ClassType* instance, Func&& func)
+    template <typename ClassType, typename Function>
+    void connect(ClassType* instance, Function&& member_function)
 	{		
-	    insert (
-	    	[instance, func](Args&&... args) {
-				std::invoke(func, instance, std::forward<Args>(args)...);
-	        }
-	    );
+        insert (
+            [instance, member_function](Args&&... args) {
+				std::invoke(member_function, instance, std::forward<Args>(args)...);
+            }
+        );
 	}
 
     // ✅ Support connecting one signal to another
@@ -78,8 +78,8 @@ public:
                 if (slot.thread->isCurrentThread()) {
                     slot.callback(args...);
                 } else {
-                    QMetaObject::invokeMethod(slot.thread, [slot, args...] {
-                        slot.callback(args...);
+                    QMetaObject::invokeMethod(slot.thread, [&cb = slot.callback, args...] {
+                        cb(args...);
                     }, Qt::QueuedConnection);
                 }
             }
