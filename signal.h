@@ -18,8 +18,8 @@ private:
     using Callback = std::function<void(Args...)>;
 
     struct Slot {
-       Callback callback = nullptr;
-       QPointer<QThread> thread = QThread::currentThread();
+	  Callback callback = nullptr;
+         QPointer<QThread> thread = QThread::currentThread();
     };
 
     std::vector<Slot> slots{};
@@ -27,8 +27,8 @@ private:
 	
 	inline void insert(const Callback &func)
 	{
-		QMutexLocker locker(&mutex);
-		slots.emplace_back(func);
+	    QMutexLocker locker(&mutex);
+	    slots.emplace_back(func);
 	}
 
 public:
@@ -40,18 +40,18 @@ public:
 	template <typename Func>
 	void connect(Func&& func)
 	{	
-		insert(func);
+	    insert(func);
 	}
 
     // ✅ Support member functions with different reference types
     template <typename ClassType, typename Func>
     void connect(ClassType* instance, Func&& func)
 	{		
-        insert (
-            [instance, func](Args&&... args) {
+	    insert (
+	    	[instance, func](Args&&... args) {
 				std::invoke(func, instance, std::forward<Args>(args)...);
-            }
-        );
+	        }
+	    );
 	}
 
     // ✅ Support connecting one signal to another
