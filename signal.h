@@ -49,7 +49,7 @@ public:
 	{		
         insert (
             [instance, func](Args&&... args) {
-				std::invoke(func, instance, std::forward<Args>(args)...);
+		std::invoke(func, instance, std::forward<Args>(args)...);
             }
         );
 	}
