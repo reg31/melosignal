@@ -76,9 +76,7 @@ public:
                 if (slot.thread->isCurrentThread()) {
                     slot.callback(args...);
                 } else {
-                    QMetaObject::invokeMethod(slot.thread, [&cb = slot.callback, args...] {
-						cb(args...);
-					}, Qt::QueuedConnection);
+                    QMetaObject::invokeMethod(slot.thread, [&cb = slot.callback, args...] {cb(args...);}, Qt::QueuedConnection);
                 }
             }
         }
